@@ -63,7 +63,7 @@ RCT_EXPORT_METHOD(authenticateWithTouchID: (NSString*)reason
                        return;
                    }
 
-                   if (errorCode == LAErrorTouchIDLockout) {
+                   if (errorCode == LAErrorTouchIDLockout  && fallbackToPasscode) {
                        [self authenticateWithPolicyAsync:LAPolicyDeviceOwnerAuthentication
                                                   reason:reason
                                       fallbackToPasscode:fallbackToPasscode
