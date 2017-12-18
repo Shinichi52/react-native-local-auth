@@ -113,7 +113,7 @@ RCT_EXPORT_METHOD(authenticateWithTouchID: (NSString*)reason
         }
 
         // Attempt Authentification
-        [context evaluatePolicy:policy
+        [context evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
                 localizedReason:reason
                           reply:^(BOOL success, NSError *error)
          {
