@@ -89,6 +89,7 @@ RCT_EXPORT_METHOD(authenticateWithTouchID: (NSString*)reason
     dispatch_queue_t highPriorityQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, [millisDelay intValue] * NSEC_PER_MSEC), highPriorityQueue, ^{
         LAContext *context = [[LAContext alloc] init];
+        context.localizedFallbackTitle = @"Enter PIN";
         if (suppressEnterPassword) {
             context.localizedFallbackTitle = @"";
         }
