@@ -10,13 +10,49 @@ RCT_EXPORT_METHOD(hasTouchID: (RCTResponseSenderBlock)callback)
 {
     LAContext *context = [[LAContext alloc] init];
     NSError *error;
+    __block NSString* errorReason;
 
     if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
         callback(@[[NSNull null], @true]);
         // Device does not support TouchID
     } else {
-        callback(@[RCTMakeError(@"RCTTouchIDNotSupported", nil, nil)]);
-        return;
+        [context evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
+                localizedReason:@"Touch ID"
+                          reply:^(BOOL success, NSError *error)
+        {
+            // Touch ID not support or not enrolled
+            if (error) {
+                switch (error.code) {
+                    case LAErrorSystemCancel:
+                        errorReason = @"LAErrorSystemCancel";
+                        break;
+
+                    case LAErrorPasscodeNotSet:
+                        errorReason = @"LAErrorPasscodeNotSet";
+                        break;
+
+                    case LAErrorTouchIDNotAvailable:
+                        errorReason = @"LAErrorTouchIDNotAvailable";
+                        break;
+
+                    case LAErrorTouchIDNotEnrolled:
+                        errorReason = @"LAErrorTouchIDNotEnrolled";
+                        break;
+
+                    case LAErrorTouchIDLockout:
+                        errorReason = @"LAErrorTouchIDLockout";
+                        break;
+                    default:
+                        errorReason = @"RCTTouchIDUnknownError";
+                        break;
+                }
+
+                NSLog(@"Touch ID not support or not enrolled: %@", errorReason);
+                callback(@[RCTMakeError(errorReason, nil, nil)]);
+                return;
+             }
+         }];
+
     }
 }
 
